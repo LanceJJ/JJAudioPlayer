@@ -31,6 +31,7 @@ typedef NS_ENUM(NSUInteger, JJAudioPlayerPlayStatus) {
 - (void)jj_audioPlayer_playFailed;
 - (void)jj_audioPlayer_playEnd;
 - (void)jj_audioPlayer_playTimeChangedCurrent:(float)current total:(float)total;
+- (void)jj_audioPlayer_playTotalBuffer:(NSTimeInterval)totalBuffer;
 
 @end
 

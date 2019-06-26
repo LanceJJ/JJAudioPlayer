@@ -89,6 +89,18 @@
             default:
                 break;
         }
+    } else if ([keyPath isEqualToString:@"loadedTimeRanges"]) {
+        
+        AVPlayerItem *playerItem = object;
+        
+        NSArray *array = playerItem.loadedTimeRanges;
+        CMTimeRange timeRange = [array.firstObject CMTimeRangeValue]; //本次缓冲的时间范围
+        NSTimeInterval totalBuffer = CMTimeGetSeconds(timeRange.start) + CMTimeGetSeconds(timeRange.duration); //缓冲总长度
+        NSLog(@"共缓冲%.2f",totalBuffer);
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(jj_audioPlayer_playTotalBuffer:)]) {
+            [self.delegate jj_audioPlayer_playTotalBuffer:totalBuffer];
+        }
     }
 }
 
@@ -414,6 +426,7 @@
     if (_playerItem) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
         [_playerItem removeObserver:self forKeyPath:@"status"];
+        [_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
     }
     _playerItem = playerItem;
     if (playerItem) {
@@ -422,6 +435,7 @@
         //监听播放器状态
         [playerItem addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionNew context:nil];
         //除了播放器状态,还可以监听缓冲状态:无缓冲playbackBufferEmpty,缓冲足够可以播放:playbackBufferEmpty等,具体状态可以百度查找
+        [playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:nil];
     }
 }
 
